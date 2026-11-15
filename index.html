@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>慢慢倒计时</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700&display=swap">
+<style>
+/*
+VOICE: 软软的、可爱的、像贴纸本
+IDEA: 一块薄薄雾面玻璃后面的壁纸，上面贴着一排数字贴纸
+PICTURE: 每个数字都是一枚会轻轻晃的贴纸，小芽团子满屏乱跑留下星星尾迹
+COLOUR and TYPE: 壁纸的绿 + 奶白 + 一点草莓粉；Mochiy Pop One 圆胖字
+LAYOUT: 全屏背景轻微虚化，中间时间贴纸，控件在下方
+*/
+:root{color-scheme:light;--ink:#2f4a2c;--soft:#5e7a58;--glass:rgba(255,255,255,.4);--line:rgba(255,255,255,.75);--accent:#7fae5a;--pink:#ff9fb2}
+*{box-sizing:border-box;min-width:0}
+html,body{height:100%}
+body{margin:0;color:var(--ink);font:16px/1.55 "M PLUS Rounded 1c","PingFang SC","Hiragino Maru Gothic ProN","Microsoft YaHei",sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.bg{position:fixed;inset:-20px;background:center/cover no-repeat;filter:blur(5px);transition:opacity 1.2s ease;opacity:0}
+.bg.on{opacity:1}
+.veil{position:fixed;inset:0;background:rgba(255,255,255,.12)}
+main{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:64px 16px 110px;gap:20px}
+.card{position:relative;width:min(980px,100%);padding:clamp(20px,4vw,40px) clamp(12px,3vw,40px);border-radius:40px;background:rgba(255,255,255,.28);border:2px dashed rgba(255,255,255,.85);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 18px 50px rgba(60,100,50,.15);text-align:center}
+.ear{position:absolute;top:-38px;width:64px;height:40px;pointer-events:none}.ear.l{left:9%}.ear.r{right:9%}
+.tail{position:absolute;right:-26px;bottom:-40px;width:64px;height:72px;transform-origin:8% 12%;animation:wag 3.6s ease-in-out infinite;pointer-events:none}
+@keyframes wag{0%,100%{transform:rotate(0)}50%{transform:rotate(10deg)}}
+.label{margin:0;font-size:17px;color:var(--soft);font-weight:700}
+.label b{font-family:"Mochiy Pop One",sans-serif;font-weight:400;color:#e57e95}
+.time{display:flex;justify-content:center;align-items:flex-end;gap:clamp(4px,1.4vw,14px);margin:14px 0 4px;font-family:"Mochiy Pop One",sans-serif;font-size:clamp(58px,15vw,180px);line-height:1}
+.grp{display:flex;flex-direction:column;align-items:center;gap:8px}
+.digs{display:flex;gap:clamp(2px,.8vw,8px)}
+.d{display:inline-block;width:.78em;height:1.08em;line-height:1.1em;border-radius:.24em;background:linear-gradient(#fbfff2,#e6f6cf);color:#5d9a3e;box-shadow:0 .05em 0 #c8e3a8,0 .1em .18em rgba(70,110,50,.18),inset 0 -.04em 0 rgba(255,255,255,.9);border:.035em solid #fff;font-variant-numeric:tabular-nums;animation:wob 3.2s ease-in-out infinite}
+.d:nth-child(2){animation-delay:-1.1s}
+.grp:nth-of-type(2) .d{color:#e57e95;background:linear-gradient(#fff8f9,#ffe3e8);box-shadow:0 .05em 0 #f6c3cd,0 .1em .18em rgba(160,80,100,.15)}
+.grp:nth-of-type(3) .d{color:#6aa6b8;background:linear-gradient(#f7feff,#ddf2f4);box-shadow:0 .05em 0 #bfe1e6,0 .1em .18em rgba(70,120,130,.15)}
+.d.pop{animation:pop .5s ease,wob 3.2s ease-in-out infinite .5s}
+.tag{font:700 14px "M PLUS Rounded 1c",sans-serif;background:rgba(255,255,255,.75);padding:2px 12px;border-radius:999px;color:var(--soft)}
+.sep svg{width:100%;height:100%;display:block;filter:drop-shadow(0 2px 4px rgba(120,170,90,.5))}
+.sep{width:.36em;height:.36em;fill:#fff;color:#fff;align-self:center;margin-bottom:.9em;text-shadow:0 2px 6px rgba(120,170,90,.5);animation:twk 2s ease-in-out infinite}
+.sec .d{font-size:.5em}
+.bar{position:relative;height:14px;border-radius:14px;background:rgba(255,255,255,.6);margin:16px auto 0;max-width:620px;border:2px solid #fff}
+.bar i{display:block;height:100%;width:0;border-radius:14px;background:repeating-linear-gradient(-45deg,#b9dd8f 0 10px,#a6d17a 10px 20px);transition:width 1s linear}
+.bar span{display:block;position:absolute;top:50%;left:0;width:34px;height:31px;transform:translate(-50%,-58%);transition:left 1s linear}.bar span svg{width:100%;height:100%;display:block}
+.note{margin:12px 0 0;font-size:16px;color:var(--soft);font-weight:700;min-height:1.6em}
+.ctrl{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px}
+.pill{display:flex;align-items:center;gap:8px;padding:6px 8px 6px 16px;border-radius:999px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:15px;font-weight:700}
+input[type=time]{font:18px "Mochiy Pop One",sans-serif;color:var(--ink);background:rgba(255,255,255,.75);border:0;border-radius:999px;padding:8px 14px;min-height:44px}
+button{font:700 15px "M PLUS Rounded 1c",sans-serif;color:var(--ink);background:var(--glass);border:1px solid var(--line);border-radius:999px;min-height:44px;padding:0 18px;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+button:hover{background:rgba(255,255,255,.65)}
+button:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.picker{position:relative;isolation:isolate;display:flex;align-items:center;gap:8px;padding:16px 18px 10px;margin-top:12px;border-radius:28px;background:rgba(255,250,251,.85);border:2.5px dashed #ffb3c3;box-shadow:0 6px 0 #ffe0e7,0 10px 24px rgba(240,138,162,.18)}
+.pk-ears{position:absolute;left:0;right:0;top:-24px;width:100%;height:26px;z-index:-1}
+.bow{z-index:1;position:absolute;top:-24px;left:50%;width:64px;transform:translateX(-50%);filter:drop-shadow(0 2px 2px rgba(240,138,162,.3))}
+.pk-t{font-weight:700;color:#e57e95;font-size:15px;margin-right:2px}
+.spin{display:flex;flex-direction:column;align-items:center}
+.spin b{font:400 34px/1.15 "Mochiy Pop One",sans-serif;color:#e57e95;min-width:1.4em;text-align:center;background:#fff;border-radius:14px;padding:0 4px;box-shadow:inset 0 -3px 0 #ffe0e7}
+.spin button{min-height:28px;height:28px;width:44px;padding:0;border:0;background:transparent;color:#f08aa2;font-size:20px;line-height:1;backdrop-filter:none;-webkit-backdrop-filter:none}
+.spin button:hover{background:#ffe8ee}
+.colon{width:20px;height:20px;fill:#ff9fb2}.colon svg{width:100%;height:100%;display:block}
+.card.preview{border-color:#ffb3c3;background:rgba(255,245,248,.4)}
+.dots{display:flex;gap:8px}
+.dots button{width:44px;padding:0;background-size:cover;background-position:center;border:2px solid rgba(255,255,255,.7)}
+.dots button[aria-pressed=true]{border-color:#fff;box-shadow:0 0 0 3px var(--accent)}
+.quick{gap:6px;flex-wrap:wrap;justify-content:center}
+.quick button{min-width:44px;padding:0 12px;background:rgba(255,255,255,.75)}
+#hMinus,#hPlus{font:20px "Mochiy Pop One",sans-serif;padding:0}
+#hGo{background:#a6d17a;color:#fff;border-color:#fff}
+#hrs{width:76px;text-align:center;font:18px "Mochiy Pop One",sans-serif;color:var(--ink);background:rgba(255,255,255,.75);border:0;border-radius:999px;min-height:44px;-moz-appearance:textfield}
+#hrs::-webkit-inner-spin-button,#hrs::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+/* pet + sparkles */
+.pet{position:fixed;left:0;top:0;width:76px;height:76px;cursor:pointer;z-index:6;will-change:transform}
+.pet svg{width:100%;height:100%;overflow:visible;animation:bob 1.8s ease-in-out infinite}
+.pet.flip svg{transform:scaleX(-1)}
+.pet .eye{animation:blink 5s infinite;transform-origin:center;transform-box:fill-box}
+.shut,.zz{display:none}.pet.sleep .eye{display:none}.pet.sleep .shut,.pet.sleep .zz{display:block}.pet.sleep svg{animation-duration:3s}
+.say{position:absolute;bottom:84px;left:50%;transform:translateX(-50%);width:max-content;max-width:220px;text-align:center;background:rgba(255,255,255,.92);padding:8px 14px;border-radius:16px;font-size:14px;font-weight:700;opacity:0;transition:opacity .4s;pointer-events:none;box-shadow:0 6px 18px rgba(60,100,50,.15)}
+.say.show{opacity:1}
+.spk{position:fixed;left:0;top:0;pointer-events:none;z-index:5;font-size:14px;line-height:1;animation:fade 1.1s ease-out forwards;text-shadow:0 0 6px #fff}
+@keyframes fade{0%{opacity:1;transform:translate(var(--x),var(--y)) scale(1) rotate(0)}100%{opacity:0;transform:translate(calc(var(--x) + var(--dx)),calc(var(--y) + var(--dy))) scale(.2) rotate(140deg)}}
+@keyframes bob{0%,100%{translate:0 0}50%{translate:0 -5px}}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+@keyframes wob{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg) translateY(-.03em)}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.15) rotate(-5deg)}100%{transform:scale(1)}}
+@keyframes twk{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+@media(max-width:600px){main{justify-content:flex-start;padding-top:56px}.tag{font-size:12px}.pet{width:62px;height:62px}}
+@media(prefers-reduced-motion:reduce){.d,.sep,.pet svg,.bg,.bar i,.bar span{animation:none!important;transition:none}}
+</style>
+</head>
+<body>
+<div class="bg" id="bgA"></div><div class="bg" id="bgB"></div><div class="veil"></div>
+<main>
+  <section class="card" id="card">
+    <svg class="ear l" viewBox="0 0 64 40" aria-hidden="true"><path d="M2 40 L26 4 Q30 0 34 4 L62 40" fill="rgba(255,255,255,.55)" stroke="#fff" stroke-width="2.5" stroke-dasharray="7 5" stroke-linejoin="round"/><path d="M18 38 L30 14 L46 38Z" fill="#ffd1dc" opacity=".85"/></svg>
+    <svg class="ear r" viewBox="0 0 64 40" aria-hidden="true"><path d="M2 40 L30 4 Q34 0 38 4 L62 40" fill="rgba(255,255,255,.55)" stroke="#fff" stroke-width="2.5" stroke-dasharray="7 5" stroke-linejoin="round"/><path d="M18 38 L34 14 L46 38Z" fill="#ffd1dc" opacity=".85"/></svg>
+    <svg class="tail" viewBox="0 0 80 90" aria-hidden="true">
+      <path d="M8 10 C40 10 50 40 40 60 S50 88 70 76" fill="none" stroke="#fff" stroke-width="13" stroke-linecap="round"/>
+      <path d="M8 10 C40 10 50 40 40 60 S50 88 70 76" fill="none" stroke="#f3fbe9" stroke-width="8" stroke-linecap="round"/>
+      <circle cx="70" cy="76" r="6" fill="#ffd1dc"/>
+    </svg>
+    <p class="label" id="label">离 07:00 还有</p>
+    <div class="time" id="time"></div>
+    <div class="bar"><i id="bar"></i><span id="barPet"><svg viewBox="0 0 40 36"><path d="M6 14 L8 2 L16 9 M34 14 L32 2 L24 9" fill="#fff" stroke="#e57e95" stroke-width="2" stroke-linejoin="round"/><ellipse cx="20" cy="21" rx="15" ry="12" fill="#fff" stroke="#e57e95" stroke-width="2"/><circle cx="14" cy="20" r="1.8" fill="#4a3a3e"/><circle cx="26" cy="20" r="1.8" fill="#4a3a3e"/><path d="M17 25 q1.5 2 3 0 q1.5 2 3 0" stroke="#4a3a3e" stroke-width="1.4" fill="none" stroke-linecap="round"/><ellipse cx="10" cy="25" rx="3" ry="1.8" fill="#ffc9cf"/><ellipse cx="30" cy="25" rx="3" ry="1.8" fill="#ffc9cf"/></svg></span></div>
+    <p class="note" id="note"></p>
+  </section>
+  <div class="ctrl">
+    <div class="picker" aria-label="目标时间">
+      <svg class="bow" viewBox="0 0 60 36" aria-hidden="true">
+        <path d="M27 18 L19 34 L24 31 L27 35 L30 20Z M33 18 L41 34 L36 31 L33 35 L30 20Z" fill="#ffb3c3" stroke="#f08aa2" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M30 15C20 2 5 3 6 13S21 23 30 17Z M30 15C40 2 55 3 54 13S39 23 30 17Z" fill="#ffc6d2" stroke="#f08aa2" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M12 10q5-3 10 1M48 10q-5-3-10 1" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="30" cy="16" r="5" fill="#ff9fb2" stroke="#f08aa2" stroke-width="1.6"/>
+      </svg>
+      <svg class="pk-ears" viewBox="0 0 200 30" preserveAspectRatio="none" aria-hidden="true"><path d="M14 30 L26 3 L50 30Z M150 30 L174 3 L186 30Z" fill="#fffafb" stroke="#ffb3c3" stroke-width="2.5" stroke-dasharray="6 4" stroke-linejoin="round"/><path d="M24 28 L28 12 L40 28Z M160 28 L172 12 L176 28Z" fill="#ffd1dc"/></svg>
+      <span class="pk-t">想在几点</span>
+      <div class="spin"><button data-s="h" data-d="1" aria-label="加一小时">▴</button><b id="pH">07</b><button data-s="h" data-d="-1" aria-label="减一小时">▾</button></div>
+      <span class="colon"><svg viewBox="0 0 20 20"><ellipse cx="10" cy="13.5" rx="5" ry="4.2"/><circle cx="4" cy="8.5" r="2.1"/><circle cx="7.8" cy="4.8" r="2.1"/><circle cx="12.2" cy="4.8" r="2.1"/><circle cx="16" cy="8.5" r="2.1"/></svg></span>
+      <div class="spin"><button data-s="m" data-d="1" aria-label="加五分钟">▴</button><b id="pM">00</b><button data-s="m" data-d="-1" aria-label="减五分钟">▾</button></div>
+    </div>
+    <button id="secBtn" aria-pressed="false">显示秒数</button>
+  </div>
+  <div class="ctrl">
+    <div class="pill quick" aria-label="几小时后">
+      或者
+      <button id="hMinus" aria-label="少半小时">−</button>
+      <input type="number" id="hrs" min="0.5" max="24" step="0.5" value="8" aria-label="小时数">
+      <button id="hPlus" aria-label="多半小时">+</button>
+      小时后
+      <button id="hGo">就这样</button>
+    </div>
+    <div class="dots" id="dots" aria-label="换背景"></div>
+  </div>
+</main>
+<div class="pet" id="pet" title="戳戳它">
+  <div class="say" id="say"></div>
+  <svg viewBox="0 0 100 100" aria-hidden="true">
+    <ellipse cx="50" cy="94" rx="28" ry="5" fill="rgba(60,100,50,.18)"/>
+    <path d="M50 20c4-12 16-14 22-10-6 2-12 6-16 14" fill="#8cc265"/>
+    <path d="M50 20c-3-9-12-11-17-8 5 2 9 5 12 10" fill="#a9d67f"/>
+    <path d="M50 22v8" stroke="#7aa955" stroke-width="3" stroke-linecap="round"/>
+    <path d="M84 80c12 0 14-12 10-20" fill="none" stroke="#bcd9a2" stroke-width="9" stroke-linecap="round"/>
+    <path d="M84 80c12 0 14-12 10-20" fill="none" stroke="#fbfff4" stroke-width="5" stroke-linecap="round"/>
+    <path d="M18 52 L22 26 L42 36Z M82 52 L78 26 L58 36Z" fill="#fbfff4" stroke="#bcd9a2" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M23 44 L25 32 L34 37Z M77 44 L75 32 L66 37Z" fill="#ffd1dc"/>
+    <path d="M14 66c0-22 16-38 36-38s36 16 36 38c0 16-12 26-36 26S14 82 14 66z" fill="#fbfff4" stroke="#bcd9a2" stroke-width="2.5"/>
+    <path d="M26 58c3-12 12-20 22-21" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none" opacity=".9"/>
+    <ellipse class="eye" cx="38" cy="64" rx="4" ry="5" fill="#3b5536"/>
+    <ellipse class="eye" cx="62" cy="64" rx="4" ry="5" fill="#3b5536"/>
+    <path class="shut" d="M33 65q5 4 10 0M57 65q5 4 10 0" stroke="#3b5536" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="30" cy="73" rx="6" ry="3.5" fill="#ffc9cf" opacity=".8"/>
+    <ellipse cx="70" cy="73" rx="6" ry="3.5" fill="#ffc9cf" opacity=".8"/>
+    <path d="M8 68 L20 70 M9 75 L20 74 M92 68 L80 70 M91 75 L80 74" stroke="#bcd9a2" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M46 72q4 4 8 0" stroke="#3b5536" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <text class="zz" x="80" y="36" font-size="16" fill="#7aa955" font-family="sans-serif">z z</text>
+  </svg>
+</div>
+<script>
+{
+const BGS=['bg/1.jpg','bg/2.jpg','bg/3.jpg','bg/4.jpg'];
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const pad=n=>String(n).padStart(2,'0');
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+let bgIdx=+store.get('bg',0)||0, showSec=store.get('sec','0')==='1';
+let target=store.get('target','07:00'), setAt=+store.get('setAt',Date.now());
+const layers=[$('bgA'),$('bgB')];let front=0;
+
+function setBg(i){
+  bgIdx=i;store.set('bg',i);
+  const next=layers[1-front];next.style.backgroundImage=`url(${BGS[i]})`;
+  next.classList.add('on');layers[front].classList.remove('on');front=1-front;
+  [...$('dots').children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i));
+}
+$('dots').innerHTML=BGS.map((s,i)=>`<button style="background-image:url(${s})" aria-label="背景 ${i+1}"></button>`).join('');
+[...$('dots').children].forEach((b,i)=>b.onclick=()=>setBg(i));
+
+function nextTarget(from){
+  const [h,m]=target.split(':').map(Number);
+  const t=new Date(from);t.setHours(h,m,0,0);
+  if(t<=from)t.setDate(t.getDate()+1);
+  return t;
+}
+function setTarget(v){target=v;setAt=Date.now();store.set('target',v);store.set('setAt',setAt);paintPicker();last='';tick()}
+
+/* countdown stickers */
+let last='',preview=null,prevT;
+function render(groups){
+  const key=groups.map(g=>g[0]+g[1]).join('|');
+  if(last.split('|').length!==groups.length||last.replace(/\d/g,'')!==key.replace(/\d/g,'')){
+    $('time').innerHTML=groups.map((g,i)=>(i?'<span class="sep"><svg viewBox="0 0 20 20"><ellipse cx="10" cy="13.5" rx="5" ry="4.2"/><circle cx="4" cy="8.5" r="2.1"/><circle cx="7.8" cy="4.8" r="2.1"/><circle cx="12.2" cy="4.8" r="2.1"/><circle cx="16" cy="8.5" r="2.1"/></svg></span>':'')+
+      `<div class="grp${i===2?' sec':''}"><div class="digs">${[...g[0]].map(c=>`<span class="d">${c}</span>`).join('')}</div><span class="tag">${g[1]}</span></div>`).join('');
+  }else{
+    const ds=$('time').querySelectorAll('.d'),cs=groups.map(g=>g[0]).join('');
+    [...cs].forEach((c,i)=>{if(ds[i].textContent!==c){ds[i].textContent=c;ds[i].classList.remove('pop');void ds[i].offsetWidth;ds[i].classList.add('pop')}});
+  }
+  last=key;
+}
+const NOTES=['时间会自己走，你不用推它','这一刻什么都不用做也可以','夜晚是用来温柔对待自己的','窗外的天色在慢慢换衣服',
+'把今天轻轻放下吧','每一分钟都在悄悄靠近目标','困意来了，就让它来','没完成的事，也会等你','你的时间，你来决定怎么过',
+'安静地待着，也是一种前进','倒数的声音很轻很轻','今晚的月亮也在慢慢爬','等待本身也可以很舒服','离目标又近了一些些',
+'心跳慢下来，呼吸慢下来','这段时间是留给你自己的','不必把每一分钟都填满','明天的事交给明天的你','被子已经在等你了',
+'灯光调暗一点会更舒服','时间很长，足够你慢慢来','这里很安全，可以放松','数字每变一次，你就离它近一点','今天到这里，已经很好了',
+'软软的夜晚，适合发呆','猫咪一天要睡掉大半天呢','像猫一样，蜷起来休息一下','肩膀和眉头，都可以松开了','热水、毯子、和慢慢走的时间',
+'不赶路的人，也会到达'];
+let noteI=Math.floor(Math.random()*NOTES.length),noteAt=Date.now();
+function curNote(){if(Date.now()-noteAt>40000){let n;do n=Math.floor(Math.random()*NOTES.length);while(n===noteI);noteI=n;noteAt=Date.now()}return NOTES[noteI]}
+const dayWord=(d,now)=>d.getDate()===now.getDate()?'今天':'明天';
+function tick(){
+  const now=new Date();
+  $('card').classList.toggle('preview',preview!==null);
+  if(preview!==null){
+    const d=new Date(now.getTime()+preview*3600000);
+    $('label').innerHTML=`<b>${preview}</b> 小时后会是`;
+    render([[pad(d.getHours()),'点'],[pad(d.getMinutes()),'分']]);
+    $('note').textContent=`${dayWord(d,now)}的 ${pad(d.getHours())}:${pad(d.getMinutes())} ～ 点「就这样」开始倒计时`;
+    return;
+  }
+  const t=nextTarget(now);
+  const base=nextTarget(new Date(setAt)).getTime()===t.getTime()?setAt:t-864e5;
+  const left=Math.max(0,Math.round((t-now)/1000));
+  const h=Math.floor(left/3600),m=Math.floor(left%3600/60),s=left%60;
+  $('label').innerHTML=`离${dayWord(t,now)} <b>${target}</b> 还有`;
+  const g=[[pad(h),'小时'],[pad(m),'分钟']];if(showSec)g.push([pad(s),'秒']);
+  render(g);
+  const total=Math.max(1,(t-base)/1000);
+  const p=Math.max(0,Math.min(100,100*(1-left/total)));
+  $('bar').style.width=p+'%';$('barPet').style.left=p+'%';
+  $('note').textContent=left<60?'到啦到啦，辛苦了 ✿':(left<600?'快到啦，再等一小下下':curNote());
+  document.title=`${pad(h)}:${pad(m)} · 慢慢倒计时`;
+}
+/* cute picker */
+function paintPicker(){const [h,m]=target.split(':');$('pH').textContent=h;$('pM').textContent=m}
+document.querySelectorAll('.spin button').forEach(b=>b.onclick=()=>{
+  let [h,m]=target.split(':').map(Number);const d=+b.dataset.d;
+  if(b.dataset.s==='h')h=(h+d+24)%24;else m=(m+d*5+60)%60;
+  preview=null;setTarget(`${pad(h)}:${pad(m)}`);
+});
+/* hours-later preview */
+const hrs=$('hrs');hrs.value=store.get('hrs','8');
+const clampH=v=>Math.min(24,Math.max(.5,Math.round((parseFloat(v)||1)*2)/2));
+function showPreview(){preview=clampH(hrs.value);last='';tick();clearTimeout(prevT);prevT=setTimeout(()=>{preview=null;last='';tick()},10000)}
+const stepH=d=>{hrs.value=clampH(+hrs.value+d);showPreview()};
+$('hMinus').onclick=()=>stepH(-.5);$('hPlus').onclick=()=>stepH(.5);
+hrs.addEventListener('input',()=>{if(parseFloat(hrs.value)>0)showPreview()});
+hrs.addEventListener('change',()=>{hrs.value=clampH(hrs.value);showPreview()});
+$('hGo').onclick=()=>{
+  const h=clampH(hrs.value);hrs.value=h;store.set('hrs',h);preview=null;clearTimeout(prevT);
+  const d=new Date(Date.now()+h*3600000);setTarget(`${pad(d.getHours())}:${pad(d.getMinutes())}`);
+};
+function paintSec(){$('secBtn').setAttribute('aria-pressed',showSec);$('secBtn').textContent=showSec?'隐藏秒数':'显示秒数'}
+$('secBtn').onclick=()=>{showSec=!showSec;store.set('sec',showSec?'1':'0');paintSec();tick()};
+
+/* pet */
+const WORDS=['今天也辛苦啦','慢慢来就好','困了就眯一会儿','我陪你一起等','喝口水吧','做一点点也算数','不急不急','你已经很好了',
+'休息不是偷懒哦','深呼吸，吸——呼——','今天能起床就很厉害了','累了就停下来','你值得被温柔对待','发呆也是一种充电',
+'想睡就睡，睡醒再说','不想做事也没关系','今天的你也很可爱','小小的进步也是进步','我一直在这里','慢一点也能到',
+'你不是一个人哦','先照顾好自己','明天又是新的一天','焦虑的时候就看看我','我给你撒点星星','抱抱你',
+'晚饭吃了吗？','伸个懒腰吧','把肩膀放松下来','不用跟别人比','你的节奏就是最好的节奏','今天就先这样也行',
+'允许自己什么都不做一会儿','窗外的天也在慢慢变色','给自己泡杯热的吧','你比你想的更坚强','今天也活下来了，好棒',
+'睡十个小时也没关系','身体想休息就听它的','做不完的事明天再说','我替你记着时间','你只要负责放松',
+'嘿嘿，被你戳到了','别戳啦，痒痒','我是一颗小芽芽','我在晒太阳','我们一起长大吧','今天的云很软',
+'早起的你会感谢现在的你','闭上眼睛数星星吧','一切都会好起来的','你做得已经够多了','不完美也很好',
+'难过的话可以哭一下','听首喜欢的歌吧','把手机放下一小会儿？','你的努力我都看到了','慢慢地，就到了',
+'时间会帮你的','今天也谢谢你照顾自己','要不要摸摸我的叶子','我会一直陪你倒数','叮！幸运星送给你',
+'没关系，真的没关系','你可以对自己好一点','暂停一下也很好','把烦恼放在我叶子上','好好吃饭好好睡觉',
+'你很重要哦','今天的风是甜的','世界在等你睡饱再出发','偷偷告诉你，你超棒','小小的你，大大的勇气',
+'不用着急长大','累的时候就当一棵草','星星也是一闪一闪慢慢亮的','今天就到这里也可以','起床失败也不要紧',
+'下一个小时会更轻松','做个好梦吧','我把坏心情吃掉啦','你值得一个好觉','软软的，就很好',
+'先完成，再完美','一件小事就够了','你笑起来很好看','我们慢慢等','今天也是被喜欢的一天'];
+const pet=$('pet'),say=$('say');
+let px=40,py=innerHeight-110,tx=px,ty=py,sleeping=false,idle=0,sayT,lastSpk=0;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function speak(w){say.textContent=w;say.classList.add('show');clearTimeout(sayT);sayT=setTimeout(()=>say.classList.remove('show'),3200)}
+function pick(){const w=pet.offsetWidth;tx=10+Math.random()*(innerWidth-w-20);ty=10+Math.random()*(innerHeight-w-20)}
+function sparkle(x,y){
+  const s=document.createElement('span');s.className='spk';
+  s.textContent=rnd(['✦','✧','⋆','★','✩','·']);
+  s.style.color=rnd(['#fff','#fff7b0','#ffd1dc','#d8f5b0','#c9f1ff']);
+  s.style.fontSize=(8+Math.random()*12)+'px';
+  s.style.setProperty('--x',x+'px');s.style.setProperty('--y',y+'px');
+  s.style.setProperty('--dx',(Math.random()-.5)*30+'px');s.style.setProperty('--dy',(Math.random()*20+6)+'px');
+  document.body.appendChild(s);setTimeout(()=>s.remove(),1150);
+}
+let lastTs=0,pauseUntil=0;
+function loop(ts){
+  const dt=Math.min(.05,(ts-(lastTs||ts))/1000);lastTs=ts;
+  if(!sleeping&&ts>pauseUntil){
+    const dx=tx-px,dy=ty-py,d=Math.hypot(dx,dy);
+    if(d>2){
+      const sp=Math.min(d,16*dt);px+=dx/d*sp;py+=dy/d*sp;
+      if(Math.abs(dx)>1)pet.classList.toggle('flip',dx<0);
+      if(ts-lastSpk>220){lastSpk=ts;const w=pet.offsetWidth;sparkle(px+w/2+(Math.random()-.5)*20,py+w*.75)}
+    }else if(Math.random()<.008)pick();
+    pet.style.transform=`translate(${px}px,${py}px)`;
+  }
+  requestAnimationFrame(loop);
+}
+function wake(){sleeping=false;pet.classList.remove('sleep');idle=0}
+pet.onclick=()=>{wake();speak(rnd(WORDS));for(let i=0;i<8;i++)sparkle(px+pet.offsetWidth/2+(Math.random()-.5)*60,py+Math.random()*40);pauseUntil=performance.now()+2800};
+setInterval(()=>{if(sleeping&&Math.random()<.12){wake();pick();return}if(!sleeping&&++idle>12&&Math.random()<.3){sleeping=true;pet.classList.add('sleep')}},5000);
+setInterval(()=>{if(!sleeping&&Math.random()<.25)speak(rnd(WORDS))},20000);
+addEventListener('resize',()=>{px=Math.min(px,innerWidth-80);py=Math.min(py,innerHeight-80);pick()});
+pet.style.transform=`translate(${px}px,${py}px)`;
+if(!reduce){pick();requestAnimationFrame(loop)}
+
+paintPicker();setBg(bgIdx);paintSec();tick();setInterval(tick,1000);
+}
+</script>
+</body>
+</html>
