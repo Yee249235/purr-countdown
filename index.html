@@ -16,12 +16,12 @@ LAYOUT: 全屏背景轻微虚化，中间时间贴纸，控件在下方
 */
 :root{color-scheme:light;--ink:#2f4a2c;--soft:#5e7a58;--glass:rgba(255,255,255,.4);--line:rgba(255,255,255,.75);--accent:#7fae5a;--pink:#ff9fb2}
 *{box-sizing:border-box;min-width:0}
-html,body{height:100%}
-body{margin:0;color:var(--ink);font:16px/1.55 "M PLUS Rounded 1c","PingFang SC","Hiragino Maru Gothic ProN","Microsoft YaHei",sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;height:100%}html{overflow-x:clip}
+body{margin:0;color:var(--ink);font:16px/1.55 "M PLUS Rounded 1c","PingFang SC","Hiragino Maru Gothic ProN","Microsoft YaHei",sans-serif;overflow-x:clip;-webkit-tap-highlight-color:transparent}
 .bg{position:fixed;inset:-20px;background:center/cover no-repeat;filter:blur(5px);transition:opacity 1.2s ease;opacity:0}
 .bg.on{opacity:1}
 .veil{position:fixed;inset:0;background:rgba(255,255,255,.12)}
-main{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:96px 16px 100px;gap:20px}
+main{position:relative;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:96px 16px 100px;gap:20px}
 .card{position:relative;width:min(980px,100%);padding:clamp(22px,4vw,42px) clamp(12px,3vw,40px);border-radius:44px;background:linear-gradient(180deg,rgba(255,255,255,.52),rgba(255,255,255,.26));border:1px solid rgba(255,255,255,.8);backdrop-filter:blur(10px) saturate(1.15);-webkit-backdrop-filter:blur(10px) saturate(1.15);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.35),0 1px 2px rgba(60,100,50,.05),0 10px 24px -6px rgba(60,100,50,.10),0 36px 72px -18px rgba(60,100,50,.18);text-align:center}
 .card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:.35;mix-blend-mode:soft-light;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 .earw{position:absolute;pointer-events:none;transform-origin:50% 96%;will-change:transform;filter:drop-shadow(0 3px 4px rgba(70,110,60,.10))}
