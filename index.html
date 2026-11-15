@@ -21,14 +21,15 @@ body{margin:0;color:var(--ink);font:16px/1.55 "M PLUS Rounded 1c","PingFang SC",
 .bg{position:fixed;inset:-20px;background:center/cover no-repeat;filter:blur(5px);transition:opacity 1.2s ease;opacity:0}
 .bg.on{opacity:1}
 .veil{position:fixed;inset:0;background:rgba(255,255,255,.12)}
-main{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:64px 16px 110px;gap:20px}
-.card{position:relative;width:min(980px,100%);padding:clamp(20px,4vw,40px) clamp(12px,3vw,40px);border-radius:40px;background:rgba(255,255,255,.28);border:2px dashed rgba(255,255,255,.85);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 18px 50px rgba(60,100,50,.15);text-align:center}
-.ear{position:absolute;top:-38px;width:64px;height:40px;pointer-events:none}.ear.l{left:9%;transform-origin:50% 100%;animation:twL 6s ease-in-out infinite}.ear.r{right:9%;transform-origin:50% 100%;animation:twR 8.5s ease-in-out infinite 1.3s}
-@keyframes twL{0%,86%,100%{transform:rotate(0)}88%{transform:rotate(-14deg) scaleY(.9)}90%{transform:rotate(4deg)}92%{transform:rotate(-10deg) scaleY(.92)}95%{transform:rotate(0)}}
-@keyframes twR{0%,80%,100%{transform:rotate(0)}83%{transform:rotate(16deg) scaleY(.88)}86%{transform:rotate(-3deg)}89%{transform:rotate(0)}}
-.card:hover .ear{animation-duration:1.6s}
-.tail{position:absolute;right:-26px;bottom:-40px;width:64px;height:72px;transform-origin:8% 12%;animation:wag 3.6s ease-in-out infinite;pointer-events:none}
-@keyframes wag{0%,100%{transform:rotate(0)}50%{transform:rotate(10deg)}}
+main{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:96px 16px 100px;gap:20px}
+.card{position:relative;width:min(980px,100%);padding:clamp(22px,4vw,42px) clamp(12px,3vw,40px);border-radius:44px;background:linear-gradient(180deg,rgba(255,255,255,.52),rgba(255,255,255,.26));border:1px solid rgba(255,255,255,.8);backdrop-filter:blur(10px) saturate(1.15);-webkit-backdrop-filter:blur(10px) saturate(1.15);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.35),0 1px 2px rgba(60,100,50,.05),0 10px 24px -6px rgba(60,100,50,.10),0 36px 72px -18px rgba(60,100,50,.18);text-align:center}
+.card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:.35;mix-blend-mode:soft-light;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.earw{position:absolute;pointer-events:none;transform-origin:50% 96%;will-change:transform;filter:drop-shadow(0 3px 4px rgba(70,110,60,.10))}
+.card>.earw{-webkit-mask-image:linear-gradient(#000 78%,transparent 96%);mask-image:linear-gradient(#000 78%,transparent 96%)}
+.earw svg{display:block;width:100%;height:100%;overflow:visible}
+.card>.earw{z-index:-1;top:-68px;width:92px;height:82px}.card>.earw.l{left:8%}.card>.earw.r{right:8%}
+.picker>.earw{top:-27px;width:38px;height:34px;filter:none;z-index:-1}.picker>.earw.l{left:14px}.picker>.earw.r{right:14px}
+.tail{z-index:-1;position:absolute;right:-78px;bottom:-26px;width:120px;height:150px;overflow:visible;pointer-events:none;filter:drop-shadow(0 4px 6px rgba(70,110,60,.12))}
 .label{margin:0;font-size:17px;color:var(--soft);font-weight:700}
 .label b{font-family:"Mochiy Pop One",sans-serif;font-weight:400;color:#e57e95}
 .time{display:flex;justify-content:center;align-items:flex-end;gap:clamp(4px,1.4vw,14px);margin:14px 0 4px;font-family:"Mochiy Pop One",sans-serif;font-size:clamp(58px,15vw,180px);line-height:1}
@@ -54,7 +55,6 @@ button{font:700 15px "M PLUS Rounded 1c",sans-serif;color:var(--ink);background:
 button:hover{background:rgba(255,255,255,.65)}
 button:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .picker{position:relative;isolation:isolate;display:flex;align-items:center;gap:8px;padding:16px 18px 10px;margin-top:12px;border-radius:28px;background:rgba(255,250,251,.85);border:2.5px dashed #ffb3c3;box-shadow:0 6px 0 #ffe0e7,0 10px 24px rgba(240,138,162,.18)}
-.pk-ears{position:absolute;left:0;right:0;top:-24px;width:100%;height:26px;z-index:-1}
 .bow{z-index:1;position:absolute;top:-24px;left:50%;width:64px;transform:translateX(-50%);filter:drop-shadow(0 2px 2px rgba(240,138,162,.3))}
 .pk-t{font-weight:700;color:#e57e95;font-size:15px;margin-right:2px}
 .spin{display:flex;flex-direction:column;align-items:center}
@@ -87,21 +87,16 @@ button:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:2
 @keyframes wob{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg) translateY(-.03em)}}
 @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.15) rotate(-5deg)}100%{transform:scale(1)}}
 @keyframes twk{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
-@media(max-width:600px){main{justify-content:flex-start;padding-top:56px}.tag{font-size:12px}.pet{width:62px;height:62px}}
-@media(prefers-reduced-motion:reduce){.ear,.d,.sep,.pet svg,.bg,.bar i,.bar span{animation:none!important;transition:none}}
+@media(max-width:600px){.tail{right:-34px;bottom:-14px;width:78px;height:98px}.tail svg,.tail{overflow:visible}.card>.earw{top:-52px;width:64px;height:58px}main{justify-content:flex-start;padding-top:80px}.tag{font-size:12px}.pet{width:62px;height:62px}}
+@media(prefers-reduced-motion:reduce){.d,.sep,.pet svg,.bg,.bar i,.bar span{animation:none!important;transition:none}}
 </style>
 </head>
 <body>
 <div class="bg" id="bgA"></div><div class="bg" id="bgB"></div><div class="veil"></div>
 <main>
   <section class="card" id="card">
-    <svg class="ear l" viewBox="0 0 64 40" aria-hidden="true"><path d="M2 40 L26 4 Q30 0 34 4 L62 40" fill="rgba(255,255,255,.55)" stroke="#fff" stroke-width="2.5" stroke-dasharray="7 5" stroke-linejoin="round"/><path d="M18 38 L30 14 L46 38Z" fill="#ffd1dc" opacity=".85"/></svg>
-    <svg class="ear r" viewBox="0 0 64 40" aria-hidden="true"><path d="M2 40 L30 4 Q34 0 38 4 L62 40" fill="rgba(255,255,255,.55)" stroke="#fff" stroke-width="2.5" stroke-dasharray="7 5" stroke-linejoin="round"/><path d="M18 38 L34 14 L46 38Z" fill="#ffd1dc" opacity=".85"/></svg>
-    <svg class="tail" viewBox="0 0 80 90" aria-hidden="true">
-      <path d="M8 10 C40 10 50 40 40 60 S50 88 70 76" fill="none" stroke="#fff" stroke-width="13" stroke-linecap="round"/>
-      <path d="M8 10 C40 10 50 40 40 60 S50 88 70 76" fill="none" stroke="#f3fbe9" stroke-width="8" stroke-linecap="round"/>
-      <circle cx="70" cy="76" r="6" fill="#ffd1dc"/>
-    </svg>
+    <div class="earw l" data-ear="card"></div><div class="earw r" data-ear="card"></div>
+    <svg class="tail" viewBox="0 0 120 150" aria-hidden="true"><path id="tailO" fill="none" stroke="#fff" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><path id="tailI" fill="none" stroke="#f6fbee" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="tailG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbfff6"/><stop offset=".75" stop-color="#eef8e2"/><stop offset="1" stop-color="#ffd3de"/></linearGradient></defs><path id="tailT" fill="none" stroke="#ffcfdb" stroke-width="16" stroke-linecap="round"/><path id="tailH" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".9"/></svg>
     <p class="label" id="label">离 07:00 还有</p>
     <div class="time" id="time"></div>
     <div class="bar"><i id="bar"></i><span id="barPet"><svg viewBox="0 0 40 36"><path d="M6 14 L8 2 L16 9 M34 14 L32 2 L24 9" fill="#fff" stroke="#e57e95" stroke-width="2" stroke-linejoin="round"/><ellipse cx="20" cy="21" rx="15" ry="12" fill="#fff" stroke="#e57e95" stroke-width="2"/><circle cx="14" cy="20" r="1.8" fill="#4a3a3e"/><circle cx="26" cy="20" r="1.8" fill="#4a3a3e"/><path d="M17 25 q1.5 2 3 0 q1.5 2 3 0" stroke="#4a3a3e" stroke-width="1.4" fill="none" stroke-linecap="round"/><ellipse cx="10" cy="25" rx="3" ry="1.8" fill="#ffc9cf"/><ellipse cx="30" cy="25" rx="3" ry="1.8" fill="#ffc9cf"/></svg></span></div>
@@ -115,7 +110,7 @@ button:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:2
         <path d="M12 10q5-3 10 1M48 10q-5-3-10 1" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
         <circle cx="30" cy="16" r="5" fill="#ff9fb2" stroke="#f08aa2" stroke-width="1.6"/>
       </svg>
-      <svg class="pk-ears" viewBox="0 0 200 30" preserveAspectRatio="none" aria-hidden="true"><path d="M14 30 L26 3 L50 30Z M150 30 L174 3 L186 30Z" fill="#fffafb" stroke="#ffb3c3" stroke-width="2.5" stroke-dasharray="6 4" stroke-linejoin="round"/><path d="M24 28 L28 12 L40 28Z M160 28 L172 12 L176 28Z" fill="#ffd1dc"/></svg>
+      <div class="earw l" data-ear="pk"></div><div class="earw r" data-ear="pk"></div>
       <span class="pk-t">想在几点</span>
       <div class="spin"><button data-s="h" data-d="1" aria-label="加一小时">▴</button><b id="pH">07</b><button data-s="h" data-d="-1" aria-label="减一小时">▾</button></div>
       <span class="colon"><svg viewBox="0 0 20 20"><ellipse cx="10" cy="13.5" rx="5" ry="4.2"/><circle cx="4" cy="8.5" r="2.1"/><circle cx="7.8" cy="4.8" r="2.1"/><circle cx="12.2" cy="4.8" r="2.1"/><circle cx="16" cy="8.5" r="2.1"/></svg></span>
@@ -307,6 +302,69 @@ addEventListener('resize',()=>{px=Math.min(px,innerWidth-80);py=Math.min(py,inne
 pet.style.transform=`translate(${px}px,${py}px)`;
 if(!reduce){pick();requestAnimationFrame(loop)}
 
+
+/* ===== cat ears: bezier shapes + spring physics ===== */
+const PAL={card:{o1:'#ffffff',o2:'rgba(255,255,255,.72)',st:'rgba(255,255,255,1)',sw:1.6,i1:'#ffb3c5',i2:'#ffe6ec'},
+           pk:{o1:'#fffafb',o2:'#fff0f3',st:'#ffb3c3',sw:3,i1:'#ffbfcd',i2:'#ffe9ee'}};
+let gid=0;
+function earSVG(kind,side){
+  const c=PAL[kind],id='eg'+(gid++),m=side==='r'?'translate(100 0) scale(-1 1)':'';
+  return `<svg viewBox="0 0 100 90"><defs>
+  <linearGradient id="${id}o" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c.o1}"/><stop offset="1" stop-color="${c.o2}"/></linearGradient>
+  <radialGradient id="${id}i" cx=".5" cy=".25" r=".9"><stop offset="0" stop-color="${c.i1}"/><stop offset="1" stop-color="${c.i2}"/></radialGradient></defs>
+  <g transform="${m}">
+  <path d="M5 90C7 63 18 30 40 8C46 1.5 54 1.5 59 8C73 31 86 61 95 90Z" fill="url(#${id}o)" stroke="${c.st}" stroke-width="${c.sw}" stroke-linejoin="round"/>
+  <path d="M24 87C27 66 34 43 46 25C49.5 20 53.5 20 56 25C65 43 72 65 77 87Z" fill="url(#${id}i)"/>
+  <path d="M33 86q7-15 3-29M43 88q3-12-1-23M68 86q-6-13-1-25" stroke="#fff" stroke-width="2.6" stroke-linecap="round" fill="none" opacity=".95"/>
+  <path d="M15 78C19 55 27 33 42 15" stroke="#fff" stroke-width="3.2" stroke-linecap="round" fill="none" opacity=".85"/>
+  </g></svg>`;
+}
+const ears=[...document.querySelectorAll('[data-ear]')].map(el=>{
+  const side=el.classList.contains('r')?'r':'l';el.innerHTML=earSVG(el.dataset.ear,side);
+  return {el,side,dir:side==='l'?-1:1,a:0,v:0,rest:0,turn:0,tv:0,tt:0,next:performance.now()+1500+Math.random()*4000};
+});
+function twitch(e,str=1){e.v+=e.dir*(320+Math.random()*180)*str}
+function earEvent(e,now){
+  const r=Math.random();
+  if(r<.5)twitch(e);
+  else if(r<.8){twitch(e,.8);setTimeout(()=>twitch(e,.7),170)}
+  else{e.tt=.5;setTimeout(()=>e.tt=0,900+Math.random()*900)}   // swivel to listen
+  e.next=now+2500+Math.random()*6000;
+}
+let lookX=0;
+addEventListener('pointermove',ev=>{lookX=(ev.clientX/innerWidth-.5)*2});
+$('card').addEventListener('pointerdown',()=>ears.forEach(e=>e.el.closest('.card')&&twitch(e,1.1)));
+let eLast=0;
+function earLoop(now){
+  const dt=Math.min(.034,(now-(eLast||now))/1000);eLast=now;
+  for(const e of ears){
+    if(now>e.next)earEvent(e,now);
+    e.rest=lookX*7;
+    const acc=-210*(e.a-e.rest)-11*e.v; e.v+=acc*dt; e.a+=e.v*dt;
+    const tacc=-120*(e.turn-e.tt)-14*e.tv; e.tv+=tacc*dt; e.turn+=e.tv*dt;
+    const sq=1-Math.min(.14,Math.abs(e.a-e.rest)/160);
+    e.el.style.transform=`rotate(${e.a.toFixed(2)}deg) skewX(${(-e.a*.22).toFixed(2)}deg) scale(${(1-e.turn*.45).toFixed(3)},${sq.toFixed(3)})`;
+  }
+  requestAnimationFrame(earLoop);
+}
+/* ===== tail: segment chain with travelling sine wave ===== */
+const tO=$('tailO'),tI=$('tailI'),tH=$('tailH'),tT=$('tailT');
+function tailLoop(now){
+  const t=now/1000,N=18,L=6.6;let x=20,y=104,a=.15;const pts=[[x,y]];
+  for(let i=1;i<=N;i++){
+    const k=i/N;
+    a-=.07+.3*k*k - Math.sin(t*1.6-i*.4)*.16*k - Math.sin(t*.55)*.03;
+    x+=Math.cos(a)*L;y+=Math.sin(a)*L;pts.push([x,y]);
+  }
+  let d=`M${pts[0][0]} ${pts[0][1]}`;
+  for(let i=1;i<pts.length-1;i++){const mx=(pts[i][0]+pts[i+1][0])/2,my=(pts[i][1]+pts[i+1][1])/2;d+=`Q${pts[i][0].toFixed(1)} ${pts[i][1].toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)}`}
+  const e=pts[pts.length-1];d+=`L${e[0].toFixed(1)} ${e[1].toFixed(1)}`;
+  tO.setAttribute('d',d);tT.setAttribute('d',`M${pts[N-3][0].toFixed(1)} ${pts[N-3][1].toFixed(1)}Q${pts[N-1][0].toFixed(1)} ${pts[N-1][1].toFixed(1)} ${e[0].toFixed(1)} ${e[1].toFixed(1)}`);tI.setAttribute('d',d);
+  let h=`M${(pts[2][0]-2).toFixed(1)} ${(pts[2][1]-3.5).toFixed(1)}`;for(let i=3;i<9;i++)h+=`L${(pts[i][0]-2).toFixed(1)} ${(pts[i][1]-3.5).toFixed(1)}`;
+  tH.setAttribute('d',h);
+  requestAnimationFrame(tailLoop);
+}
+if(!reduce){requestAnimationFrame(earLoop);requestAnimationFrame(tailLoop)}else tailLoop(0);
 paintPicker();setBg(bgIdx);paintSec();tick();setInterval(tick,1000);
 }
 </script>
